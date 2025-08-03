@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR System Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .check-item {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+        }
+        .check-item.success { border-left-color: #28a745; }
+        .check-item.warning { border-left-color: #ffc107; }
+        .check-item.error { border-left-color: #dc3545; }
+        .status { font-weight: bold; }
+        .details { font-size: 12px; color: #666; margin-top: 5px; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .refresh { background: #28a745; }
+        .refresh:hover { background: #1e7e34; }
+    </style>
+</head>
+<body>
+    <h1>🔍 OCR System Diagnostic Tool</h1>
+    <p>This tool checks if your system can run the OCR Screenshot Extractor.</p>
+    
+    <div id="checks"></div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <button onclick="runChecks()" class="refresh">🔄 Run Checks Again</button>
+        <button onclick="window.open('screenshot_extractor.html', '_blank')">🚀 Open Main App</button>
+    </div>
+
+    <script>
+        async function runChecks() {
+            const checksContainer = document.getElementById('checks');
+            checksContainer.innerHTML = '<p>Running system checks...</p>';
+            
+            const checks = [
+                {
+                    name: 'Internet Connection',
+                    test: async () => {
+                        try {
+                            const response = await fetch('https://www.google.com/favicon.ico', { 
+                                mode: 'no-cors',
+                                cache: 'no-cache'
+                            });
+                            return { success: true, message: 'Internet connection is working' };
+                        } catch (error) {
+                            return { success: false, message: 'No internet connection detected' };
+                        }
+                    }
+                },
+                {
+                    name: 'JavaScript Enabled',
+                    test: async () => {
+                        return { success: true, message: 'JavaScript is enabled (you can see this message)' };
+                    }
+                },
+                {
+                    name: 'File Protocol Check',
+                    test: async () => {
+                        const isFileProtocol = window.location.protocol === 'file:';
+                        return {
+                            success: !isFileProtocol,
+                            message: isFileProtocol 
+                                ? 'Using file:// protocol - may cause issues with external libraries'
+                                : 'Using HTTP/HTTPS protocol - good for external libraries'
+                        };
+                    }
+                },
+                {
+                    name: 'Tesseract.js CDN Test',
+                    test: async () => {
+                        try {
+                            const response = await fetch('https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js');
+                            if (response.ok) {
+                                return { success: true, message: 'Primary CDN is accessible' };
+                            } else {
+                                throw new Error('CDN returned error: ' + response.status);
+                            }
+                        } catch (error) {
+                            return { success: false, message: 'Cannot access Tesseract.js CDN: ' + error.message };
+                        }
+                    }
+                },
+                {
+                    name: 'Alternative CDN Test',
+                    test: async () => {
+                        try {
+                            const response = await fetch('https://unpkg.com/tesseract.js@4/dist/tesseract.min.js');
+                            if (response.ok) {
+                                return { success: true, message: 'Alternative CDN is accessible' };
+                            } else {
+                                throw new Error('Alternative CDN returned error: ' + response.status);
+                            }
+                        } catch (error) {
+                            return { success: false, message: 'Cannot access alternative CDN: ' + error.message };
+                        }
+                    }
+                },
+                {
+                    name: 'Browser Compatibility',
+                    test: async () => {
+                        const features = {
+                            canvas: !!document.createElement('canvas').getContext,
+                            webWorkers: typeof Worker !== 'undefined',
+                            promises: typeof Promise !== 'undefined',
+                            fetch: typeof fetch !== 'undefined'
+                        };
+                        
+                        const missingFeatures = Object.keys(features).filter(key => !features[key]);
+                        
+                        return {
+                            success: missingFeatures.length === 0,
+                            message: missingFeatures.length === 0 
+                                ? 'All required browser features are supported'
+                                : 'Missing features: ' + missingFeatures.join(', ')
+                        };
+                    }
+                },
+                {
+                    name: 'Local Storage',
+                    test: async () => {
+                        try {
+                            localStorage.setItem('test', 'test');
+                            localStorage.removeItem('test');
+                            return { success: true, message: 'Local storage is working' };
+                        } catch (error) {
+                            return { success: false, message: 'Local storage is not available: ' + error.message };
+                        }
+                    }
+                }
+            ];
+            
+            checksContainer.innerHTML = '';
+            
+            for (const check of checks) {
+                const checkDiv = document.createElement('div');
+                checkDiv.className = 'check-item';
+                checkDiv.innerHTML = `
+                    <div class="status">⏳ ${check.name}</div>
+                    <div class="details">Testing...</div>
+                `;
+                checksContainer.appendChild(checkDiv);
+                
+                try {
+                    const result = await check.test();
+                    checkDiv.className = `check-item ${result.success ? 'success' : 'error'}`;
+                    checkDiv.innerHTML = `
+                        <div class="status">${result.success ? '✅' : '❌'} ${check.name}</div>
+                        <div class="details">${result.message}</div>
+                    `;
+                } catch (error) {
+                    checkDiv.className = 'check-item error';
+                    checkDiv.innerHTML = `
+                        <div class="status">❌ ${check.name}</div>
+                        <div class="details">Test failed: ${error.message}</div>
+                    `;
+                }
+                
+                // Small delay between checks for better UX
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            // Add summary
+            const successCount = document.querySelectorAll('.check-item.success').length;
+            const totalCount = checks.length;
+            
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = `check-item ${successCount === totalCount ? 'success' : 'warning'}`;
+            summaryDiv.innerHTML = `
+                <div class="status">📊 Summary</div>
+                <div class="details">
+                    ${successCount}/${totalCount} checks passed. 
+                    ${successCount === totalCount 
+                        ? 'Your system should work with the OCR app!' 
+                        : 'Some issues detected - see failed checks above.'}
+                </div>
+            `;
+            checksContainer.appendChild(summaryDiv);
+        }
+        
+        // Run checks on page load
+        document.addEventListener('DOMContentLoaded', runChecks);
+    </script>
+</body>
+</html>

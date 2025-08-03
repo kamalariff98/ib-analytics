@@ -1,0 +1,361 @@
+{
+  "platforms": {
+    "tiktok": {
+      "name": "TikTok Profiles",
+      "fields": [
+        "name",
+        "username", 
+        "followers",
+        "following",
+        "likes",
+        "videos",
+        "bio",
+        "isVerified",
+        "isLive",
+        "profileLink",
+        "engagementRate"
+      ],
+      "headers": [
+        "Name",
+        "Username", 
+        "Followers",
+        "Following",
+        "Likes",
+        "Videos",
+        "Bio",
+        "Verified",
+        "Is Live",
+        "Profile Link",
+        "Engagement Rate",
+        "Date Added",
+        "Actions"
+      ],
+      "extractionPatterns": {
+        "username": {
+          "patterns": ["/@[\\w.]+/"],
+          "description": "Extract username starting with @"
+        },
+        "name": {
+          "patterns": ["/([A-Za-z\\s]+)\\s*@/", "/^([A-Za-z\\s]+)/m"],
+          "description": "Extract display name before username or as prominent text"
+        },
+        "followers": {
+          "patterns": [
+            "/(\\d+[,.]?\\d*[KMB]?)\\s*(Followers|followers)/i",
+            "/Followers[:\\s]*(\\d+[,.]?\\d*[KMB]?)/i"
+          ],
+          "description": "Extract follower count with K/M/B suffixes"
+        },
+        "following": {
+          "patterns": [
+            "/(\\d+[,.]?\\d*[KMB]?)\\s*(Following|following)/i",
+            "/Following[:\\s]*(\\d+[,.]?\\d*[KMB]?)/i"
+          ],
+          "description": "Extract following count"
+        },
+        "likes": {
+          "patterns": [
+            "/(\\d+[,.]?\\d*[KMB]?)\\s*(Likes|likes)/i",
+            "/Likes[:\\s]*(\\d+[,.]?\\d*[KMB]?)/i"
+          ],
+          "description": "Extract total likes count"
+        },
+        "isLive": {
+          "patterns": ["/\\bLIVE\\b/i"],
+          "description": "Check if account is currently live"
+        },
+        "isVerified": {
+          "patterns": ["/verified|✓|checkmark/i"],
+          "description": "Check if account is verified"
+        }
+      }
+    },
+    "telegram": {
+      "name": "Telegram Channels",
+      "fields": [
+        "channelName",
+        "username",
+        "subscribers", 
+        "description",
+        "channelType",
+        "language",
+        "channelLink",
+        "isVerified"
+      ],
+      "headers": [
+        "Channel Name",
+        "Username",
+        "Subscribers",
+        "Description", 
+        "Type",
+        "Language",
+        "Channel Link",
+        "Verified",
+        "Date Added",
+        "Actions"
+      ],
+      "extractionPatterns": {
+        "channelName": {
+          "patterns": [
+            "/([^\\n]+)\\s*\\n\\s*[\\d,]+\\s*(subscribers|members)/i",
+            "/^([A-Za-z\\s]+)/m"
+          ],
+          "description": "Extract channel name from header"
+        },
+        "subscribers": {
+          "patterns": [
+            "/([\\d,]+)\\s*(subscribers|members)/i",
+            "/subscribers[:\\s]*([\\d,]+)/i"
+          ],
+          "description": "Extract subscriber count"
+        },
+        "channelLink": {
+          "patterns": ["/https?:\\/\\/t\\.me\\/[\\w]+/"],
+          "description": "Extract Telegram channel link"
+        }
+      }
+    },
+    "instagram": {
+      "name": "Instagram Profiles", 
+      "fields": [
+        "name",
+        "username",
+        "followers",
+        "following",
+        "posts",
+        "bio",
+        "isVerified",
+        "isPrivate",
+        "profileLink",
+        "category"
+      ],
+      "headers": [
+        "Name",
+        "Username",
+        "Followers", 
+        "Following",
+        "Posts",
+        "Bio",
+        "Verified",
+        "Private",
+        "Profile Link",
+        "Category",
+        "Date Added",
+        "Actions"
+      ],
+      "extractionPatterns": {
+        "username": {
+          "patterns": ["/@[\\w.]+/"],
+          "description": "Extract Instagram username"
+        },
+        "followers": {
+          "patterns": [
+            "/(\\d+[,.]?\\d*[KMB]?)\\s*(followers?)/i",
+            "/followers?[:\\s]*(\\d+[,.]?\\d*[KMB]?)/i"
+          ],
+          "description": "Extract follower count"
+        },
+        "posts": {
+          "patterns": [
+            "/(\\d+[,.]?\\d*[KMB]?)\\s*(posts?)/i",
+            "/posts?[:\\s]*(\\d+[,.]?\\d*[KMB]?)/i"
+          ],
+          "description": "Extract post count"
+        },
+        "isPrivate": {
+          "patterns": ["/private|this account is private/i"],
+          "description": "Check if account is private"
+        },
+        "profileLink": {
+          "patterns": ["/https?:\\/\\/(?:www\\.)?instagram\\.com\\/[\\w.]+/"],
+          "description": "Extract Instagram profile link"
+        }
+      }
+    },
+    "youtube": {
+      "name": "YouTube Channels",
+      "fields": [
+        "channelName",
+        "subscribers",
+        "videos",
+        "views", 
+        "description",
+        "isVerified",
+        "channelLink",
+        "joinDate"
+      ],
+      "headers": [
+        "Channel Name",
+        "Subscribers",
+        "Videos",
+        "Total Views",
+        "Description",
+        "Verified", 
+        "Channel Link",
+        "Join Date",
+        "Date Added",
+        "Actions"
+      ],
+      "extractionPatterns": {
+        "subscribers": {
+          "patterns": [
+            "/([\\d,.]+[KMB]?)\\s*(subscribers?)/i",
+            "/subscribers?[:\\s]*([\\d,.]+[KMB]?)/i"
+          ],
+          "description": "Extract subscriber count"
+        },
+        "videos": {
+          "patterns": [
+            "/([\\d,.]+)\\s*(videos?)/i",
+            "/videos?[:\\s]*([\\d,.]+)/i"
+          ],
+          "description": "Extract video count"
+        },
+        "views": {
+          "patterns": [
+            "/([\\d,.]+[KMB]?)\\s*(views?)/i",
+            "/views?[:\\s]*([\\d,.]+[KMB]?)/i"
+          ],
+          "description": "Extract total view count"
+        },
+        "channelLink": {
+          "patterns": ["/https?:\\/\\/(?:www\\.)?youtube\\.com\\/[@\\w]+/"],
+          "description": "Extract YouTube channel link"
+        },
+        "joinDate": {
+          "patterns": ["/joined\\s+([\\w\\s,]+)/i"],
+          "description": "Extract channel join date"
+        }
+      }
+    },
+    "recap": {
+      "name": "TikTok Live Recap",
+      "fields": [
+        "username",
+        "duration",
+        "viewers",
+        "peakViewers",
+        "newFollowers",
+        "diamondsReceived",
+        "gifts",
+        "shares",
+        "comments",
+        "hasGoLiveButton"
+      ],
+      "headers": [
+        "Username",
+        "Duration",
+        "Viewers",
+        "Peak Viewers", 
+        "New Followers",
+        "Diamonds",
+        "Gifts",
+        "Shares",
+        "Comments",
+        "Go Live Button",
+        "Date Added",
+        "Actions"
+      ],
+      "extractionPatterns": {
+        "duration": {
+          "patterns": [
+            "/(\\d+h\\s*\\d*m?|\\d+hr\\s*\\d*min?|\\d+\\s*hours?\\s*\\d*\\s*min?)/i",
+            "/duration[:\\s]*(\\d+[hm:\\s]+)/i"
+          ],
+          "description": "Extract live stream duration"
+        },
+        "viewers": {
+          "patterns": [
+            "/(\\d+\\.?\\d*[KMB]?)\\s*[+]?\\s*(viewers?|views?)/i",
+            "/viewers?[:\\s]*(\\d+\\.?\\d*[KMB]?)/i"
+          ],
+          "description": "Extract viewer count"
+        },
+        "newFollowers": {
+          "patterns": [
+            "/(\\d+)\\s*new\\s*followers/i",
+            "/new\\s*followers[:\\s]*(\\d+)/i"
+          ],
+          "description": "Extract new followers gained"
+        },
+        "diamondsReceived": {
+          "patterns": [
+            "/(\\d+)\\s*(diamonds?|coins?)\\s*received/i",
+            "/received[:\\s]*(\\d+)\\s*(diamonds?|coins?)/i"
+          ],
+          "description": "Extract diamonds/coins received"
+        },
+        "hasGoLiveButton": {
+          "patterns": ["/go\\s*live/i"],
+          "description": "Check if Go Live button is present"
+        }
+      }
+    }
+  },
+  "settings": {
+    "ocr": {
+      "maxImageSize": 1200,
+      "jpegQuality": 0.8,
+      "maxFileSize": 10485760,
+      "supportedFormats": ["image/jpeg", "image/png", "image/webp", "image/gif"]
+    },
+    "batch": {
+      "maxConcurrency": 2,
+      "delayBetweenFiles": 100
+    },
+    "export": {
+      "dateFormat": "YYYY-MM-DD",
+      "csvDelimiter": ",",
+      "jsonIndent": 2
+    },
+    "ui": {
+      "messageTimeout": 5000,
+      "progressUpdateInterval": 100,
+      "analyticsRefreshRate": 1000
+    }
+  },
+  "validation": {
+    "required": {
+      "tiktok": ["username", "name"],
+      "telegram": ["channelName"],
+      "instagram": ["username", "name"], 
+      "youtube": ["channelName"],
+      "recap": ["username"]
+    },
+    "numeric": [
+      "followers",
+      "following", 
+      "likes",
+      "videos",
+      "posts",
+      "subscribers",
+      "views",
+      "viewers",
+      "peakViewers",
+      "newFollowers",
+      "diamondsReceived",
+      "gifts",
+      "shares",
+      "comments"
+    ]
+  },
+  "analytics": {
+    "chartColors": [
+      "#FF6384",
+      "#36A2EB", 
+      "#FFCE56",
+      "#4BC0C0",
+      "#9966FF",
+      "#FF9F40",
+      "#FF6384",
+      "#C7B42C"
+    ],
+    "performanceThresholds": {
+      "fast": 3000,
+      "medium": 8000,
+      "slow": 15000
+    }
+  },
+  "version": "2.0.0",
+  "lastUpdated": "2024-12-19"
+}
